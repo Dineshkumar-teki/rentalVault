@@ -1,6 +1,7 @@
 import "@/assests/styles/globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AuthProvider from "@/components/AuthProvider";
 
 export const metadata = {
   title: "RentalVault | Find The Perfect Rental",
@@ -10,13 +11,15 @@ export const metadata = {
 
 const MainLayout = ({ children }) => {
   return (
-    <html lang="en">
-      <body>
-        <Navbar />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <AuthProvider>
+      <html lang="en">
+        <body>
+          <Navbar />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+        </body>
+      </html>
+    </AuthProvider>
   );
 };
 
