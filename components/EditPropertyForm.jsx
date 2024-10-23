@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { fetchProperty } from "@/utils/request";
+import { toast } from "react-toastify";
 
-const AddPropertyForm = () => {
+const EditPropertyForm = () => {
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [fields, setFields] = useState({
     type: "",
     name: "",
@@ -28,8 +32,10 @@ const AddPropertyForm = () => {
       email: "",
       phone: "",
     },
-    images: [],
   });
+
+  const { id } = useParams();
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,31 +75,62 @@ const AddPropertyForm = () => {
     setFields((prev) => ({ ...prev, amenities: updatedAmenities }));
   };
 
-  const handleImageChange = (e) => {
-    const { files } = e.target;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData(e.target);
 
-    const updatedImages = [...fields.images];
-
-    for (const file of files) {
-      updatedImages.push(file);
+      const res = await fetch(`/api/properties/${id}`, {
+        method: "PUT",
+        body: formData,
+      });
+      console.log(res);
+      if (res.status === 200) {
+        router.push(`/properties/${id}`);
+      } else if (res.status === 401 || res.status === 403) {
+        toast.error("permissions denied");
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+      console.log(error);
     }
-
-    setFields((prev) => ({ ...prev, images: updatedImages }));
   };
 
   useEffect(() => {
     setMounted(true);
+
+    const fetchPropertyData = async () => {
+      try {
+        const property = await fetchProperty(id);
+
+        if (property && property.rates) {
+          const defaultRates = { ...property.rates };
+          for (const rate in defaultRates) {
+            if (defaultRates[rate] === null) {
+              defaultRates[rate] = "";
+            }
+          }
+          property.rates = defaultRates;
+        }
+
+        setFields(property);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPropertyData();
   }, []);
 
   return (
-    mounted && (
-      <form
-        action="/api/properties"
-        method="POST"
-        encType="multipart/form-data"
-      >
+    mounted &&
+    !loading && (
+      <form onSubmit={handleSubmit}>
         <h2 className="text-3xl text-center font-semibold mb-6">
-          Add Property
+          Edit Property
         </h2>
         <div className="mb-4">
           <label htmlFor="type" className="block text-gray-700 font-bold mb-2">
@@ -537,31 +574,12 @@ const AddPropertyForm = () => {
           />
         </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="images"
-            className="block text-gray-700 font-bold mb-2"
-          >
-            Images (Select up to 4 images)
-          </label>
-          <input
-            type="file"
-            id="images"
-            name="images"
-            className="border rounded w-full py-2 px-3"
-            accept="image/*"
-            multiple
-            required
-            onChange={handleImageChange}
-          />
-        </div>
-
         <div>
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
             type="submit"
           >
-            <i className="fas fa-plus-circle mr-2"></i> Add Property
+            <i className="fas fa-plus-circle mr-2"></i> Edit Property
           </button>
         </div>
       </form>
@@ -569,4 +587,4 @@ const AddPropertyForm = () => {
   );
 };
 
-export default AddPropertyForm;
+export default EditPropertyForm;
