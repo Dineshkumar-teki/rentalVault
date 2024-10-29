@@ -13,6 +13,8 @@ export const metadata = {
   keywords: "rental, find rentals, find properties",
 };
 
+export const dynamic = "force-dynamic";
+
 const MainLayout = ({ children }) => {
   return (
     <GlobalProvider>
