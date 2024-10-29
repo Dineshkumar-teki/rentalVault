@@ -6,11 +6,15 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "photoswipe/dist/photoswipe.css";
 import { GlobalProvider } from "@/context/GlobalContext";
+import logo from "@/assests/styles/images/appLogo.png";
 
 export const metadata = {
-  title: "RentalVault | Find The Perfect Rental",
-  description: "Find your dream rental property",
-  keywords: "rental, find rentals, find properties",
+  title: "RentalVault | Discover Your Ideal Rental Property",
+  description:
+    "Search for your dream rental property with RentalVault. Explore various types of rentals, add listings, and find the perfect home for you.",
+  keywords:
+    "rental, find rentals, rental properties, home rental, rental management, discover rentals, apartment rentals, house rentals",
+  logo: logo, // Replace with the actual path to your logo
 };
 
 export const dynamic = "force-dynamic";
