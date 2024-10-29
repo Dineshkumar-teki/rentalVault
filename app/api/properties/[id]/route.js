@@ -71,13 +71,10 @@ export const PUT = async (request, { params }) => {
 
     // GET property to update
     const existingProperty = await Property.findById(id);
-    console.log(existingProperty)
 
     if (!existingProperty) {
       return new Response("Property not found", { status: 404 });
     }
-
-    console.log()
 
     //verify ownership
     if (existingProperty.owner.toString() !== userId) {
